@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QInputDialog, QHBoxLayout # 
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtCore import Qt
 from game.game_state import GameState
+from ui.sounds import Sounds
 from ui.buttons import HistoryButton, MicroModeButton
 from ui.history_panel import HistoryPanel
 
@@ -20,6 +21,7 @@ class ChessWidget(QWidget):
 
         self.selected_square = None
         self.game = GameState()
+        self.sounds = Sounds(self.game)
         
         self.is_micro = False
         self.svg_widget = QSvgWidget()
@@ -63,9 +65,6 @@ class ChessWidget(QWidget):
             for move in self.game.board.legal_moves:
                 if move.from_square == self.selected_square:
                     highlight_squares.append(move.to_square)
-
-
-
             fill[self.selected_square] = "#ffd966" # set color for square
             for sq in highlight_squares:
                 fill[sq] = "#9fc5e8"
@@ -129,6 +128,7 @@ class ChessWidget(QWidget):
             else:
                 self.game.make_move(from_sq, to_sq)
 
+            self.sounds.play_move_sound()
             self.history_panel.update_history(self.game.board)
             self.update_board()
 
@@ -146,7 +146,9 @@ class ChessWidget(QWidget):
         return mapping[item] if (ok and item in mapping) else chess.QUEEN
     
     
-    def pixel_to_square(self, x, y):
+    def pixel_to_square(self, x, y): 
+        #BUG: If the pawn was chosen for move and the user clicks on 8 horizontal as whites,
+        #  a window for promotion will appear even if pawn was at 2 horizontal
         size = self.svg_widget.width()
         square_size = size / 8
 
