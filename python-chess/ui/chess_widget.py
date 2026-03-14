@@ -6,7 +6,7 @@ from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtCore import Qt
 from game.game_state import GameState
 from ui.sounds import Sounds
-from ui.buttons import HistoryButton, MicroModeButton
+from ui.buttons import HistoryButton, MicroModeButton, SoundButton
 from ui.history_panel import HistoryPanel
 
 
@@ -29,8 +29,13 @@ class ChessWidget(QWidget):
         self.svg_widget.mousePressEvent = self.on_click # .svg board
         self.history_button = HistoryButton()
         self.history_panel = HistoryPanel()
-        self.history_button.toggled.connect(self.toggle_history)
+        self.sound_button = SoundButton(self)
         self.micro_mode_button = MicroModeButton(self)
+
+        self.sound_button.toggled.connect(self.toggle_sound)
+        self.sound_button.setChecked(True) # set sound on by default
+        
+        self.history_button.toggled.connect(self.toggle_history)
         self.micro_mode_button.toggled.connect(self.toggle_micro_mode)
 
         self.update_board()
@@ -41,7 +46,8 @@ class ChessWidget(QWidget):
         layoutH.addStretch()
         layoutH.addWidget(self.micro_mode_button)
         layoutH.addStretch()
-
+        layoutH.addWidget(self.sound_button)
+        layoutH.addStretch()
         # chess board
         layoutV = QVBoxLayout()
         layoutV.addLayout(layoutH)
@@ -187,11 +193,20 @@ class ChessWidget(QWidget):
             self.setMaximumSize(16777215, 16777215)
             
             self.history_panel.show()
-            self.history_button.setFixedSize(120, 30)
-            self.micro_mode_button.setFixedSize(120, 30)
-            
+            # deleted button resizing
             self.resize(700, 500)
         
         self.setUpdatesEnabled(True) 
 
+    def toggle_sound(self, checked):
+        self.setUpdatesEnabled(True)
+        self.sounds.enabled = checked
 
+        if checked:
+            self.sounds.enabled = True
+            self.sounds.play_move_sound() # play sound to show that sound is on
+            print("DEBUG: button widget checked, sound on")
+        else:
+            self.sounds.enabled = False
+            self.sounds.stop_all_sounds() # stop all sounds immediately when sound is turned off
+            print("DEBUG: button widget unchecked, sound off")

@@ -8,7 +8,7 @@ class IconButton(QPushButton): # parent button
 
         self.setIcon(QIcon(icon_path))
         self.setIconSize(QSize(20, 20))
-        self.setFixedSize(120, 30)
+        self.setFixedSize(30, 30)
 
         self.setCheckable(checkable)
         self.setToolTip(tooltip)
@@ -30,3 +30,12 @@ class MicroModeButton(IconButton): # button for micro mode, no history panel.
             checkable=True
         )
         self.clicked.connect(parent.toggle_micro_mode)
+
+class SoundButton(IconButton): # button for sound on/off
+    def __init__(self, parent):
+        super().__init__(
+            icon_path="python-chess/ui/assets/icons/sound_on.svg",
+            tooltip="Toggle sound",
+            checkable=True
+        )
+        self.clicked.connect(parent.toggle_sound)
