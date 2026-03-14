@@ -121,13 +121,23 @@ class ChessWidget(QWidget):
                 self.update_board()
                 return
         
-            # promotion logic
-            if self.game.is_promotion(from_sq, to_sq):
-                promo = self.get_promotion_piece()
-                self.game.make_move(from_sq, to_sq, promo)
-            else:
-                self.game.make_move(from_sq, to_sq)
+                    #BUG: If the pawn was chosen for move and the user clicks on 8 horizontal as whites,
+                    #  a window for promotion will appear even if pawn was at 2 horizontal
 
+                #FIXED: Now the promotion window will appear only if the move is legal and is actually a promotion move. So if the user clicks on 8 horizontal but the move is not legal or not a promotion, it will just update the board without showing the promotion window.
+
+            # promotion logic
+            if self.game.if_legal_move(from_sq, to_sq):
+
+                if self.game.is_promotion(from_sq, to_sq):
+                    promo = self.get_promotion_piece()
+                    self.game.make_move(from_sq, to_sq, promo)
+                else:
+                    self.game.make_move(from_sq, to_sq)
+            else:
+                self.update_board()
+                return
+            
             self.sounds.play_move_sound()
             self.history_panel.update_history(self.game.board)
             self.update_board()
@@ -147,8 +157,6 @@ class ChessWidget(QWidget):
     
     
     def pixel_to_square(self, x, y): 
-        #BUG: If the pawn was chosen for move and the user clicks on 8 horizontal as whites,
-        #  a window for promotion will appear even if pawn was at 2 horizontal
         size = self.svg_widget.width()
         square_size = size / 8
 

@@ -4,6 +4,10 @@ class GameState:
     def __init__(self):
         self.board = chess.Board()
 
+    def if_legal_move(self, from_sq, to_sq):
+        move = chess.Move(from_sq, to_sq)
+        return move in self.board.legal_moves
+
     def is_promotion(self, from_sq, to_sq):
         piece = self.board.piece_at(from_sq)
         if not piece or piece.piece_type != chess.PAWN:
