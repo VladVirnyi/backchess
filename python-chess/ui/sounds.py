@@ -6,6 +6,7 @@ class Sounds:
         pygame.mixer.init()
         self.game = game
         self.enabled = True
+        self.last_move_count = 0
 
         self.sounds = {
             "move": pygame.mixer.Sound("python-chess/ui/assets/sounds/Move.wav"),
@@ -21,6 +22,12 @@ class Sounds:
         if self.enabled == True:
             if not self.game.board.move_stack:
                 return
+            
+            current_move_count = len(self.game.board.move_stack)
+            if current_move_count == self.last_move_count:
+                return
+            
+            self.last_move_count = current_move_count
             
             # 1. Спершу перевіряємо ШАХ та МАТ (це треба робити на актуальній дошці)
             is_mate = self.game.board.is_checkmate()

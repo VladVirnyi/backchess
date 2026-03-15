@@ -127,22 +127,18 @@ class ChessWidget(QWidget):
                 self.update_board()
                 return
         
-                    #BUG: If the pawn was chosen for move and the user clicks on 8 horizontal as whites,
-                    #  a window for promotion will appear even if pawn was at 2 horizontal
-
-                #FIXED: Now the promotion window will appear only if the move is legal and is actually a promotion move. So if the user clicks on 8 horizontal but the move is not legal or not a promotion, it will just update the board without showing the promotion window.
+            #BUG: Promotion window not working.
+            #FIXED: Fixed in game_state.py
 
             # promotion logic
-            if self.game.if_legal_move(from_sq, to_sq):
-
-                if self.game.is_promotion(from_sq, to_sq):
-                    promo = self.get_promotion_piece()
-                    self.game.make_move(from_sq, to_sq, promo)
-                else:
-                    self.game.make_move(from_sq, to_sq)
-            else:
+            if self.game.is_promotion(from_sq, to_sq):
+                promo = self.get_promotion_piece()
+                self.game.make_move(from_sq, to_sq, promo)
                 self.update_board()
                 return
+            else:
+                self.game.make_move(from_sq, to_sq)
+
             
             self.sounds.play_move_sound()
             self.history_panel.update_history(self.game.board)

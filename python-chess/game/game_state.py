@@ -13,9 +13,9 @@ class GameState:
         if not piece or piece.piece_type != chess.PAWN:
             return False
 
-        if piece.color == chess.WHITE and chess.square_rank(to_sq) == 7:
+        if piece.color == chess.WHITE and chess.square_rank(to_sq) == 7 and chess.square_rank(from_sq) == 6:
             return True
-        if piece.color == chess.BLACK and chess.square_rank(to_sq) == 0:
+        if piece.color == chess.BLACK and chess.square_rank(to_sq) == 0 and chess.square_rank(from_sq) == 1:
             return True
 
         return False
