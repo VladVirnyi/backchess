@@ -134,8 +134,6 @@ class ChessWidget(QWidget):
             if self.game.is_promotion(from_sq, to_sq):
                 promo = self.get_promotion_piece()
                 self.game.make_move(from_sq, to_sq, promo)
-                self.update_board()
-                return
             else:
                 self.game.make_move(from_sq, to_sq)
 

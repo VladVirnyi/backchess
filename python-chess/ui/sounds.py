@@ -1,5 +1,6 @@
 from game.game_state import GameState
 import pygame
+import chess
 
 class Sounds:
     def __init__(self, game):
@@ -14,8 +15,8 @@ class Sounds:
             "capture": pygame.mixer.Sound("python-chess/ui/assets/sounds/Capture.wav"),
             # "checkmate": pygame.mixer.Sound("python-chess/ui/assets/sounds/Checkmate.wav"),
             "castle": pygame.mixer.Sound("python-chess/ui/assets/sounds/Castle.wav"),
-            # "promotion": pygame.mixer.Sound("python-chess/ui/assets/sounds/Promotion.wav"), #will add
-            # "game_over": pygame.mixer.Sound("python-chess/ui/assets/sounds/GameOver.wav")
+            "promotion": pygame.mixer.Sound("python-chess/ui/assets/sounds/Promote.wav"),
+            "game_over": pygame.mixer.Sound("python-chess/ui/assets/sounds/Game-end.wav")
         }
 
     def play_move_sound(self):
@@ -28,25 +29,24 @@ class Sounds:
                 return
             
             self.last_move_count = current_move_count
-            
-            # 1. Спершу перевіряємо ШАХ та МАТ (це треба робити на актуальній дошці)
+
             is_mate = self.game.board.is_checkmate()
             is_check = self.game.board.is_check()
-            
-            # 2. А тепер перевіряємо ВЗЯТТЯ та РОКИРОВКУ
-            # Для цього ми тимчасово забираємо останній хід з дошки
+            is_promotion = self.game.is_last_move_promotion()
+            game_over = self.game.board.is_checkmate() or self.game.board.is_stalemate()
+            #add stalemate sound later
+
             last_move = self.game.board.pop() 
             
-            # Тепер дошка в стані "ДО ходу", і ми можемо чесно запитати, чи був хід взяттям
             is_capture = self.game.board.is_capture(last_move)
             is_castle = self.game.board.is_castling(last_move)
             
-            # Повертаємо хід назад на дошку, щоб нічого не зламати
             self.game.board.push(last_move)
 
-            # 3. Визначаємо ключ звуку за пріоритетом
             if is_mate:
                 sound_key = "game_over"
+            elif is_promotion:
+                sound_key = "promotion"
             elif is_check:
                 sound_key = "check"
             elif is_capture:
@@ -56,7 +56,6 @@ class Sounds:
             else:
                 sound_key = "move"
 
-            # 4. Програємо звук
             print(f"DEBUG: sound: {sound_key}")
             try:
                 if sound_key in self.sounds:
